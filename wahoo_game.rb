@@ -125,7 +125,6 @@ class Board
   # does not take into account whether or not another marble is already there,
   # or other rules, except that only endzone owners can reach their endzones
   def reachable_holes(start, player, roll)
-    #puts "rh call #{start}"
     dests = []
     dests << 'yolo' if yolo_entry?(start)
     valid_endzone_entry = false
@@ -180,14 +179,12 @@ class Board
   # Uses depth-first search
   # Includes start and finish
   def path(start, finish, player, roll, progress = 0, prev = nil)
-    #puts "path: #{start}, #{finish.inspect}, plyr #{player}, prgrs #{progress}, prev #{prev}"
 
     # Special case: start == finish
     return [start] if start == finish
     return nil if progress > 6
     return nil if start == 'yolo' && roll != 1
     path = []
-    #puts "reachable holes from #{start} are #{reachable_holes(start, player, roll).inspect}"
 
     # Special case: start is next to finish
     if reachable_holes(start, player, roll).include? finish
@@ -199,14 +196,12 @@ class Board
 
         next_path = path(h, finish, player, roll, progress + 1, [start, prev].compact.flatten)
         if next_path
-          #puts "path: returning #{[start, next_path].flatten} from prgrs #{progress}"
           return [start, next_path].flatten
         else
           next
         end
       end
     end
-    #puts "returning nil next_path from prgrs #{progress}"
     return nil
   end
 
@@ -215,22 +210,12 @@ class Board
   end
 
   def obstructed_path?(start, finish, player, roll)
-    #print "Obstructed path for #{start.inspect}, #{finish.inspect}? "
-    #print @holes[start]
     if @holes[start].nil?
       fail " START IS NIL"
     end
-    #print " not nil. "
-    #print " #{path(start, finish, player)[1..-1].inspect}... "
     thepath = path(start, finish, player, roll)[1..-1]
-    #puts thepath.inspect
     thepath.each do |hole|
-      #print "#{hole},"
       if @holes[hole] && (@holes[hole].owner == @holes[start].owner)
-        #print " true\n"
-        #puts "path: #{thepath}"
-        #puts "owner of obstruction: #{@holes[hole].owner}"
-        #puts "owner of start marble: #{@holes[start].owner}"
         return true
       end
     end
@@ -361,7 +346,7 @@ class Game
   end
 
   def execute_move(start, finish)
-    # Kill a bitch if it needs killin
+    # If there's a marble at the destination, kill it
     if @board.holes[finish]
       killer = @board.holes[start].owner
       victim = @board.holes[finish].owner
@@ -459,7 +444,6 @@ class Game
     # Start with all reachable holes given the die roll
     @board.holes_for_player(player).each do |hole|
       reachable = @board.remote_reachable_holes(hole, roll, player)
-      #puts "reachable: #{reachable.inspect}"
       reachable.each do |finish|
         moves << [hole, finish]
       end
