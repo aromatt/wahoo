@@ -1,4 +1,4 @@
 wahoo
 =====
 
-Wahoo Game Simulator
+[Wahoo](https://en.wikipedia.org/wiki/Wahoo_(board_game)) Simulator
