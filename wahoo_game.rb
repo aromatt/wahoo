@@ -98,7 +98,7 @@ class Board
     end.uniq
   end
 
-  def holes_for_player(player)
+  def marbles_for_player(player)
     @holes.keys.select { |h| @holes[h] && @holes[h].owner == player }
   end
 
@@ -354,7 +354,7 @@ class Game
       fail "suicide!!" if killer == victim
 
       # Find a free bench spot for the killed marble
-      cur_bench = @board.holes_for_player(victim).
+      cur_bench = @board.marbles_for_player(victim).
         select { |h| (h.to_s =~ /bench/) }.
         map { |h| h.split('_')[2].to_i }
       empty = ([0,1,2,3] - cur_bench).first
@@ -378,12 +378,12 @@ class Game
         colorize(color: Board::COLORS[@active_player])
       $log.debug "player: #{@active_player}, roll: #{roll}".
         colorize(color: Board::COLORS[@active_player])
-      $log.debug "Marbles for player #{@active_player}: " +
-        "#{@board.holes_for_player(@active_player).inspect}"
+      $log.debug "Holes for player #{@active_player}: " +
+        "#{@board.marbles_for_player(@active_player).inspect}"
 
       # Should never happen...
-      if @board.holes_for_player(@active_player).count < @board.marbles_per_player
-        fail "lost a marble?"
+      if @board.marbles_for_player(@active_player).count < @board.marbles_per_player
+        fail "lost a marble? player #{@active_player}\n#{@board}\n#{@board.holes}"
       end
 
       moves = available_moves(@active_player, roll)
@@ -442,7 +442,7 @@ class Game
     moves = []
 
     # Start with all reachable holes given the die roll
-    @board.holes_for_player(player).each do |hole|
+    @board.marbles_for_player(player).each do |hole|
       reachable = @board.remote_reachable_holes(hole, roll, player)
       reachable.each do |finish|
         moves << [hole, finish]
