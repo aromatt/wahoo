@@ -30,10 +30,11 @@ class Board
 
   COLORS = %w[red green light_blue yellow magenta white light_black].map(&:to_sym)
 
-  def initialize(num_legs = 6, leg_height = 5)
+  def initialize(num_legs = 6, leg_height = 5, whos_playing = nil)
     @holes = {}
     @num_legs = num_legs
     @leg_height = leg_height
+    populate_start(whos_playing || (0..@num_legs-1).to_a)
   end
 
   def num_normal_holes
@@ -102,11 +103,11 @@ class Board
   end
 
   # pass in an array of which players are playing
-  def populate_start(legs)
-    $log.debug "Initializing board for players #{legs.inspect}"
-    legs.each do |leg|
+  def populate_start(roster)
+    $log.debug "Initializing board for players #{roster.inspect}"
+    roster.each do |player_num|
       marbles_per_player.times do |i|
-        @holes["bench_#{leg}_#{i}"] = Marble.new(leg)
+        @holes["bench_#{player_num}_#{i}"] = Marble.new(player_num)
       end
     end
   end
@@ -328,8 +329,7 @@ class Game
     if board
       @board = board
     else
-      @board = Board.new(6)
-      @board.populate_start((0..num_players-1).to_a)
+      @board = Board.new(num_players)
     end
     @turn = 0
     @num_players = num_players
