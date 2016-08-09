@@ -27,6 +27,7 @@ end
 class Board
 
   attr_reader :holes     # hash, keys are integers, yolo, bench_<leg>_<i>, endzone_<leg>_<i>
+  attr_reader :num_legs, :leg_height
 
   COLORS = %w[red green light_blue yellow magenta white light_black].map(&:to_sym)
 
@@ -112,6 +113,7 @@ class Board
     end
   end
 
+  # TODO why is this plural? can there be more than one?
   def winners
     out = []
     @num_legs.times do |player|
@@ -120,6 +122,10 @@ class Board
       end
     end
     out
+  end
+
+  def winner
+    winners.first
   end
 
   # physical reachability for single hole-to-hole moves;
@@ -495,5 +501,4 @@ if __FILE__ == $0
     choice ||= scoot_endzone(player, moves, board)
     choice ||= random(player, moves, board)
   end
-  $log.info "done"
 end
